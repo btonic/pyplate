@@ -1,6 +1,6 @@
 import os
 import struct
-
+from collections import OrderedDict
 
 #used to determine endianess
 NATIVE_ENDIAN =  "@"
@@ -42,10 +42,10 @@ class template(object):
 		for obj in self.data_objects:
 			obj.cast(f_obj, file_length)
 	def extract(self, f_obj):
-		for obj in self.data_objects:
+		for index, obj in enumerate(self.data_objects):
 			extracted_data = obj.extract(f_obj)
 			if extracted_data != None:
-				self.extracted[obj.name] = extracted_data[1]
+				self.extracted[(index, obj.name)] = extracted_data
 		return self.extracted
 
 class BaseDatatype(object):
@@ -68,13 +68,22 @@ class BaseDatatype(object):
 			f_obj.read(self.length)
 		self.casted = True
 	def extract(self, f_obj):
+		print self.unpack_sequence
 		extracted_values = []
 		if not self.casted:
 			self.cast(f_obj, os.path.getsize(f_obj.name))
-		for start in self.f_offset_start:
+		for index, start in enumerate(self.f_offset_start):
 			f_obj.seek(start)
 			type_data = f_obj.read(self.length)
-			extracted_values.append(struct.unpack(self.endianess + self.unpack_sequence, type_data))
+			extracted_values.append(
+				dict(
+					[
+						("%s%s" % (self.name, index), struct.unpack(self.endianess + self.unpack_sequence, type_data)),
+				 		("length", self.length),
+				 		("offset", f_obj.tell())
+				 	]
+				)
+			)
 		return extracted_values
 
 #Utility "types", it's just a simple way to jump around the file
@@ -94,74 +103,74 @@ class BYTE(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _BYTE_SIZE
-		self.unpack_sequence = _BYTE * self.repeat
+		self.unpack_sequence = _BYTE
 class CHAR(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _CHAR_SIZE
-		self.unpack_sequence = _CHAR * self.repeat
+		self.unpack_sequence = _CHAR
 class SCHAR(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _SCHAR_SIZE
-		self.unpack_sequence = _SCHAR * self.repeat
+		self.unpack_sequence = _SCHAR
 class UCHAR(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _UCHAR_SIZE
-		self.unpack_sequence = _UCHAR * self.repeat
+		self.unpack_sequence = _UCHAR
 class BOOL(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _BOOL_SIZE
-		self.unpack_sequence = _BOOL * self.repeat
+		self.unpack_sequence = _BOOL
 class SHORT(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _SHORT_SIZE
-		self.unpack_sequence = _SHORT * self.repeat
+		self.unpack_sequence = _SHORT
 class USHORT(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _USHORT_SIZE
-		self.unpack_sequence = _USHORT * self.repeat
+		self.unpack_sequence = _USHORT
 class INT(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _INT_SIZE
-		self.unpack_sequence = _INT * self.repeat
+		self.unpack_sequence = _INT
 class UINT(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _UINT_SIZE
-		self.unpack_sequence = _UINT * self.repeat
+		self.unpack_sequence = _UINT
 class LONG(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _LONG_SIZE
-		self.unpack_sequence = _LONG * self.repeat
+		self.unpack_sequence = _LONG
 class ULONG(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _ULONG_SIZE
-		self.unpack_sequence = _ULONG * self.repeat
+		self.unpack_sequence = _ULONG
 class LLONG(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _LLONG_SIZE
-		self.unpack_sequence = _LLONG * self.repeat
+		self.unpack_sequence = _LLONG
 class ULLONG(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _ULLONG_SIZE
-		self.unpack_sequence = _ULLONG * self.repeat
+		self.unpack_sequence = _ULLONG
 class FLOAT(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _FLOAT_SIZE
-		self.unpack_sequence = _FLOAT * self.repeat
+		self.unpack_sequence = _FLOAT
 class DOUBLE(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _DOUBLE_SIZE
-		self.unpack_sequence = _DOUBLE * self.repeat
+		self.unpack_sequence = _DOUBLE
