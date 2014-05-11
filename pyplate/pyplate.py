@@ -1,6 +1,5 @@
 import os
 import struct
-from collections import OrderedDict
 
 #used to determine endianess
 NATIVE_ENDIAN =  "@"
