@@ -64,7 +64,7 @@ class BaseDatatype(object):
 			if (f_obj.tell() + self.length - 1) > file_length:
 				raise TypeError("Unable to cast data type to file object at offset: %s" % str(f_obj.tell()))
 			#push the pointer forward to account for it being "read"
-			f_obj.read(self.length)
+			f_obj.seek(f_obj.tell() + self.length)
 		self.casted = True
 	def extract(self, f_obj):
 		print self.unpack_sequence
