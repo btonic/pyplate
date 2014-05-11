@@ -1,4 +1,4 @@
 pyplate
 =======
 
-A binary templating language written in pure python.
+A binary templating framework written in pure python.
