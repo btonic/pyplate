@@ -1,5 +1,6 @@
 import os
 import struct
+import StringIO
 
 #used to determine endianess
 NATIVE_ENDIAN =  "@"
@@ -36,8 +37,7 @@ class template(object):
 		return self
 	def append(self, obj):
 		self.data_objects.append(obj)
-	def cast(self, f_obj):
-		file_length = os.path.getsize(f_obj.name)
+	def cast(self, f_obj, *args, **kwargs):
 		for obj in self.data_objects:
 			obj.cast(f_obj, file_length)
 	def extract(self, f_obj):
@@ -69,7 +69,12 @@ class BaseDatatype(object):
 	def extract(self, f_obj):
 		extracted_values = []
 		if not self.casted:
-			self.cast(f_obj, os.path.getsize(f_obj.name))
+			if isinstance(f_obj,String) or isinstance(f_obj, File):
+				#the helper objects are being used. Use the len attribute.
+				self.cast(f_obj, f_obj.len)
+			else:
+				#assume normal open file
+				self.cast(f_obj, os.path.getsize(f_obj.name))
 		for index, start in enumerate(self.f_offset_start):
 			f_obj.seek(start)
 			type_data = f_obj.read(self.length)
@@ -84,6 +89,29 @@ class BaseDatatype(object):
 			)
 		return extracted_values
 
+class String(object):
+	def __init__(self, string_buffer):
+		self.string_buffer = StringIO.StringIO(string_buffer)
+		self.len = self.string_buffer.len
+	def read(self, bytes=1):
+		return self.string_buffer.read(bytes)
+	def seek(self, offset):
+		self.string_buffer.seek(offset)
+	def tell(self):
+		return self.string_buffer.tell()
+
+def File(object):
+	def __init__(self, path, f_mode):
+		self.f_obj = open(path, f_mode)
+		self.len = os.path.getsize(path)
+	def read(self, bytes=1):
+		return self.f_obj.read(bytes)
+	def seek(self, offset):
+		self.f_obj.seek(offset)
+	def tell(self):
+		return self.f_obj.tell()
+	def close(self):
+		self.f_obj.close()
 #Utility "types", it's just a simple way to jump around the file
 class FSeek(object):
 	def __init__(self, offset):
@@ -97,6 +125,7 @@ class FSeek(object):
 		for x in range(0):
 			yield None
 
+#Normal types
 class BYTE(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
