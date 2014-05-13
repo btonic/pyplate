@@ -44,7 +44,7 @@ class template(object):
 		for index, obj in enumerate(self.data_objects):
 			extracted_data = obj.extract(f_obj)
 			if extracted_data != None:
-				self.extracted[(index, obj.name)] = extracted_data
+				self.extracted[(index, "%s[0]" % obj.name)] = extracted_data
 		return self.extracted
 
 class BaseDatatype(object):
@@ -81,7 +81,7 @@ class BaseDatatype(object):
 			extracted_values.append(
 				dict(
 					[
-						("%s%s" % (self.name, index), struct.unpack(self.endianess + self.unpack_sequence, type_data)),
+						("%s[%s]" % (self.name, index+1), struct.unpack(self.endianess + self.unpack_sequence, type_data)),
 				 		("length", self.length),
 				 		("offset", f_obj.tell())
 				 	]
@@ -89,41 +89,32 @@ class BaseDatatype(object):
 			)
 		return extracted_values
 
-class String(object):
-	def __init__(self, string_buffer):
-		self.string_buffer = StringIO.StringIO(string_buffer)
-		self.len = self.string_buffer.len
-	def read(self, bytes=1):
-		return self.string_buffer.read(bytes)
-	def seek(self, offset):
-		self.string_buffer.seek(offset)
-	def tell(self):
-		return self.string_buffer.tell()
+#ease of use functions
+class String(StringIO.StringIO):
+	pass
+#this is required for use with the templates because the .len attribute is required.
+class File(file):
+	def __init__(self, *args, **kwargs):
+		file.__init__(self, *args, **kwargs)
+		self.len = os.path.getsize(self.name)
 
-def File(object):
-	def __init__(self, path, f_mode):
-		self.f_obj = open(path, f_mode)
-		self.len = os.path.getsize(path)
-	def read(self, bytes=1):
-		return self.f_obj.read(bytes)
-	def seek(self, offset):
-		self.f_obj.seek(offset)
-	def tell(self):
-		return self.f_obj.tell()
-	def close(self):
-		self.f_obj.close()
+
 #Utility "types", it's just a simple way to jump around the file
 class FSeek(object):
 	def __init__(self, offset):
 		self.offset = offset
+		self.name = None
+		self.casted = False
 	def cast(self, f_obj, *args, **kwargs):
 		f_obj.seek(self.offset)
-	def extract(self):
+		self.casted = True
+	def extract(self, f_obj):
 		"""
 		Simple compliance for the extraction of objects
 		"""
-		for x in range(0):
-			yield None
+		if not self.casted:
+			self.cast(f_obj)
+		return None
 
 #Normal types
 class BYTE(BaseDatatype):
