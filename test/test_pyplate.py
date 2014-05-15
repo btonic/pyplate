@@ -7,10 +7,11 @@ from struct import unpack
 
 class TestPyplate(unittest.TestCase):
 	def setUp(self):
+		self.template_name = "template"
+		self.data_name     = "test"
+		self.data_key      = "test[0]"
 		numeric          = "1"
 		alphanumeric     = "a"
-		self.data_name   = "test"
-		self.data_key    = "test[0]"
 		self.test_byte   = pyplate.String(numeric)
 		self.test_char   = pyplate.String(alphanumeric)
 		self.test_bool   = pyplate.String(numeric)
@@ -77,6 +78,15 @@ class TestPyplate(unittest.TestCase):
 		self.assertTrue(
 			unpack("d", str(self.test_double)) == extracted_value
 		)
+	def test_template_extract(self):
+		t_template = pyplate.template(name=self.template_name)(
+			(pyplate.CHAR)(name=self.data_name)
+		)
+		extracted_value = t_template.extract(self.test_char)[self.template_name][(0, self.data_name)][0][self.data_key]
+		self.assertTrue(
+			len(extracted_value) > 0
+		)
+		
 
 if __name__ == '__main__':
 	unittest.main()

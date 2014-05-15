@@ -30,7 +30,7 @@ class template(object):
 	def __init__(self, name=""):
 		self.name = name
 		self.data_objects = []
-		self.extracted = {}
+		self.extracted = {self.name:{}}
 	def __call__(self, *args, **kwargs):
 		for obj in args:
 			self.data_objects.append(obj)
@@ -44,7 +44,7 @@ class template(object):
 		for index, obj in enumerate(self.data_objects):
 			extracted_data = obj.extract(f_obj)
 			if extracted_data != None:
-				self.extracted[(index, "%s" % obj.name)] = extracted_data
+				self.extracted[self.name][(index, "%s" % obj.name)] = extracted_data
 		return self.extracted
 
 class BaseDatatype(object):
