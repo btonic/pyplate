@@ -1,7 +1,7 @@
 import pyplate
 import unittest
 import os
-from struct import unpack
+from struct import unpack, calcsize
 
 
 
@@ -15,12 +15,12 @@ class TestPyplate(unittest.TestCase):
 		self.test_byte   = pyplate.String(numeric)
 		self.test_char   = pyplate.String(alphanumeric)
 		self.test_bool   = pyplate.String(numeric)
-		self.test_short  = pyplate.String(numeric * 2)
-		self.test_int    = pyplate.String(numeric * 4)
-		self.test_long   = pyplate.String(numeric * 8)
-		self.test_llong  = pyplate.String(numeric * 8)
-		self.test_float  = pyplate.String(numeric * 4)
-		self.test_double = pyplate.String(numeric * 8)
+		self.test_short  = pyplate.String(numeric * calcsize("h"))
+		self.test_int    = pyplate.String(numeric * calcsize("i"))
+		self.test_long   = pyplate.String(numeric * calcsize("l"))
+		self.test_llong  = pyplate.String(numeric * calcsize("q"))
+		self.test_float  = pyplate.String(numeric * calcsize("f"))
+		self.test_double = pyplate.String(numeric * calcsize("d"))
 		self.test_file   = pyplate.File("test/data/data_file.txt", 'rb')
 	def tearDown(self):
 		self.test_file.close()

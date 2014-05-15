@@ -9,21 +9,21 @@ BIG_ENDIAN    =  ">"
 NETWORK_ENDIAN = "!"
 
 #used when unpacking during an extraction
-_BYTE,   _BYTE_SIZE    = "c", 1 #extracted as a char because python does not have a null byte value
-_CHAR,   _CHAR_SIZE    = "c", 1
-_SCHAR,  _SCHAR_SIZE   = "b", 1
-_UCHAR,  _UCHAR_SIZE   = "B", 1
-_BOOL,   _BOOL_SIZE    = "?", 1
-_SHORT,  _SHORT_SIZE   = "h", 2
-_USHORT, _USHORT_SIZE  = "H", 2
-_INT,    _INT_SIZE     = "i", 4
-_UINT,   _UINT_SIZE    = "I", 4
-_LONG,   _LONG_SIZE    = "l", 8
-_ULONG,  _ULONG_SIZE   = "L", 8
-_LLONG,  _LLONG_SIZE   = "q", 8
-_ULLONG, _ULLONG_SIZE  = "Q", 8
-_FLOAT,  _FLOAT_SIZE   = "f", 4
-_DOUBLE, _DOUBLE_SIZE  = "d", 8
+_BYTE,   _BYTE_SIZE    = "c", struct.calcsize("c") #extracted as a char because python does not have a null byte value
+_CHAR,   _CHAR_SIZE    = "c", struct.calcsize("c")
+_SCHAR,  _SCHAR_SIZE   = "b", struct.calcsize("b")
+_UCHAR,  _UCHAR_SIZE   = "B", struct.calcsize("B")
+_BOOL,   _BOOL_SIZE    = "?", struct.calcsize("?")
+_SHORT,  _SHORT_SIZE   = "h", struct.calcsize("h")
+_USHORT, _USHORT_SIZE  = "H", struct.calcsize("H")
+_INT,    _INT_SIZE     = "i", struct.calcsize("i")
+_UINT,   _UINT_SIZE    = "I", struct.calcsize("I")
+_LONG,   _LONG_SIZE    = "l", struct.calcsize("l")
+_ULONG,  _ULONG_SIZE   = "L", struct.calcsize("L")
+_LLONG,  _LLONG_SIZE   = "q", struct.calcsize("q")
+_ULLONG, _ULLONG_SIZE  = "Q", struct.calcsize("Q")
+_FLOAT,  _FLOAT_SIZE   = "f", struct.calcsize("f")
+_DOUBLE, _DOUBLE_SIZE  = "d", struct.calcsize("d")
 
 
 class template(object):
