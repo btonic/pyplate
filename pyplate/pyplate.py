@@ -18,8 +18,8 @@ _SHORT,  _SHORT_SIZE   = "h", 2
 _USHORT, _USHORT_SIZE  = "H", 2
 _INT,    _INT_SIZE     = "i", 4
 _UINT,   _UINT_SIZE    = "I", 4
-_LONG,   _LONG_SIZE    = "l", 4
-_ULONG,  _ULONG_SIZE   = "L", 4
+_LONG,   _LONG_SIZE    = "l", 8
+_ULONG,  _ULONG_SIZE   = "L", 8
 _LLONG,  _LLONG_SIZE   = "q", 8
 _ULLONG, _ULLONG_SIZE  = "Q", 8
 _FLOAT,  _FLOAT_SIZE   = "f", 4
@@ -44,7 +44,7 @@ class template(object):
 		for index, obj in enumerate(self.data_objects):
 			extracted_data = obj.extract(f_obj)
 			if extracted_data != None:
-				self.extracted[(index, "%s[0]" % obj.name)] = extracted_data
+				self.extracted[(index, "%s" % obj.name)] = extracted_data
 		return self.extracted
 
 class BaseDatatype(object):
@@ -81,7 +81,7 @@ class BaseDatatype(object):
 			extracted_values.append(
 				dict(
 					[
-						("%s[%s]" % (self.name, index+1), struct.unpack(self.endianess + self.unpack_sequence, type_data)),
+						("%s[%s]" % (self.name, index), struct.unpack(self.endianess + self.unpack_sequence, type_data)),
 				 		("length", self.length),
 				 		("offset", f_obj.tell())
 				 	]
@@ -91,7 +91,8 @@ class BaseDatatype(object):
 
 #ease of use functions
 class String(StringIO.StringIO):
-	pass
+	def __str__(self):
+		return str(self.buf)
 #this is required for use with the templates because the .len attribute is required.
 class File(file):
 	def __init__(self, *args, **kwargs):
