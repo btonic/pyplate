@@ -71,7 +71,7 @@ class BaseDatatype(object):
 		for cast_num in range(self.repeat):
 			self.f_offset_start.append(f_obj.tell())
 			if (f_obj.tell() + self.length) > file_length:
-				raise TypeError("Unable to cast data type %s to file object at offset: %s" % (self.__class__.__name__, str(f_obj.tell())))
+				raise TypeError("Unable to cast data type %s:%s to file object at offset: %s" % (self.__class__.__name__, self.name, str(f_obj.tell())))
 			#push the pointer forward to account for it being "read"
 			f_obj.seek(f_obj.tell() + self.length)
 		self.casted = True
