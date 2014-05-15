@@ -30,11 +30,17 @@ class template(object):
 	def __init__(self, name=""):
 		self.name = name
 		self.data_objects = []
-		self.extracted = {self.name:{}}
+		self.templates = {}
+		self.data_values = {}
 	def __call__(self, *args, **kwargs):
 		for obj in args:
 			self.data_objects.append(obj)
 		return self
+	def __getitem__(self, item):
+		if item == "templates":
+			return self.templates
+		elif item == "variables":
+			return self.data_values
 	def append(self, obj):
 		self.data_objects.append(obj)
 	def cast(self, f_obj, *args, **kwargs):
@@ -44,8 +50,11 @@ class template(object):
 		for index, obj in enumerate(self.data_objects):
 			extracted_data = obj.extract(f_obj)
 			if extracted_data != None:
-				self.extracted[self.name][(index, "%s" % obj.name)] = extracted_data
-		return self.extracted
+				if isinstance(extracted_data[0], template):
+					self.templates[obj.name] = extracted_data[0]
+				elif isinstance(extracted_data[0], BaseDatatype):
+					self.data_values[extracted_data[0].name] = extracted_data[1]
+		return [self]
 
 class BaseDatatype(object):
 	def __init__(self, name="", repeat=1, endianess=NATIVE_ENDIAN):
@@ -81,13 +90,14 @@ class BaseDatatype(object):
 			extracted_values.append(
 				dict(
 					[
-						("%s[%s]" % (self.name, index), struct.unpack(self.endianess + self.unpack_sequence, type_data)),
+						("value", struct.unpack(self.endianess + self.unpack_sequence, type_data)),
 				 		("length", self.length),
 				 		("offset", f_obj.tell())
 				 	]
 				)
 			)
-		return extracted_values
+		return [self, extracted_values]
+
 
 #ease of use functions
 class String(StringIO.StringIO):
