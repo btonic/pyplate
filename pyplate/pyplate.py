@@ -45,7 +45,10 @@ class template(object):
 		self.data_objects.append(obj)
 	def cast(self, f_obj, *args, **kwargs):
 		for obj in self.data_objects:
-			obj.cast(f_obj, file_length)
+			if isinstance(f_obj, File) or isinstance(f_obj, String):
+				obj.cast(f_obj, f_obj.len)
+			else:
+				self.cast(f_obj, os.path.getsize(f_obj.name))
 	def extract(self, f_obj):
 		for index, obj in enumerate(self.data_objects):
 			extracted_data = obj.extract(f_obj)

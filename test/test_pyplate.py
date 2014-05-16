@@ -75,6 +75,14 @@ class TestPyplate(unittest.TestCase):
 		self.assertTrue(
 			unpack("d", str(self.test_double)) == extracted_values[0]["value"]
 		)
+	def test_template_cast(self):
+		t_template = pyplate.template(name=self.template_name)(
+			(pyplate.CHAR)(name=self.data_name)
+		)
+		t_template.cast(self.test_char)
+		self.assertTrue(
+			t_template.data_objects[0].casted
+		)
 	def test_template_extract(self):
 		t_template = pyplate.template(name=self.template_name)(
 			(pyplate.CHAR)(name=self.data_name),
