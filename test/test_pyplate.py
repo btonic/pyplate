@@ -103,7 +103,6 @@ class TestPyplate(unittest.TestCase):
 		)
 		compiled_strings = pyplate.String(str(self.test_char) + str(self.test_char))
 		t_template.extract(compiled_strings)
-		print t_template["variables"]
 		self.assertTrue(
 			t_template["variables"][self.data_name][0]["offset"] == 1
 		)
