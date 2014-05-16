@@ -4,7 +4,6 @@ import os
 from struct import unpack, calcsize
 
 
-
 class TestPyplate(unittest.TestCase):
 	def setUp(self):
 		self.template_name = "template"
@@ -90,7 +89,7 @@ class TestPyplate(unittest.TestCase):
 			len(t_template["variables"][self.data_name][0]["value"]) == 1
 		)
 	def test_file_extract(self):
-		with pyplate.File(self.test_file_path) as t_file:
+		with pyplate.File(self.test_file_path, 'rb') as t_file:
 			t_template = pyplate.template(name=self.template_name)(
 				(pyplate.CHAR)(name=self.data_name, repeat=4),
 				(pyplate.SHORT)(name=self.data_name+"short")
