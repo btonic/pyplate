@@ -40,7 +40,8 @@ my_template.extract(my_string)
 pp.pprint(my_template["variables"])
 
 #output of pprint
-#{   'MyChar': [   {   'length': 1, 'offset': 1, 'value': ('h',)},
-#                  {   'length': 1, 'offset': 2, 'value': ('e',)}]}
+#{   'MyChar': [   {   'length': 1, 'offset': 1, 'value': 'h'},
+#                  {   'length': 1, 'offset': 2, 'value': 'e'}]}
+
 
 ```
