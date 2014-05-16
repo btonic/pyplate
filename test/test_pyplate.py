@@ -21,9 +21,7 @@ class TestPyplate(unittest.TestCase):
 		self.test_llong  = pyplate.String(numeric * calcsize("q"))
 		self.test_float  = pyplate.String(numeric * calcsize("f"))
 		self.test_double = pyplate.String(numeric * calcsize("d"))
-		self.test_file   = pyplate.File("test/data/data_file.txt", 'rb')
-	def tearDown(self):
-		self.test_file.close()
+		self.test_file_path = "test/data/data_file.txt"
 	def test_BYTE_extract(self):
 		t_byte = (pyplate.BYTE)(name=self.data_name)
 		extracted_values = t_byte.extract(self.test_byte)[1]
@@ -91,7 +89,17 @@ class TestPyplate(unittest.TestCase):
 			len(t_template["templates"]["test2"]["variables"]["datatest2"][0]["value"]) == 1,
 			len(t_template["variables"][self.data_name][0]["value"]) == 1
 		)
-		
+	def test_file_extract(self):
+		with pyplate.File(self.test_file_path) as t_file:
+			t_template = pyplate.template(name=self.template_name)(
+				(pyplate.CHAR)(name=self.data_name, repeat=4),
+				(pyplate.SHORT)(name=self.data_name+"short")
+			)
+			t_template.extract(t_file)
+			self.assertTrue(
+				len(t_template["variables"][self.data_name]) == 4,
+				len(t_template["variables"][self.data_name+"short"]) == 1
+			)
 
 if __name__ == '__main__':
 	unittest.main()
