@@ -95,7 +95,7 @@ class BaseDatatype(object):
 					[
 						("value", struct.unpack(self.endianess + self.unpack_sequence, type_data)[0]),
 				 		("length", self.length),
-				 		("offset", f_obj.tell())
+				 		("offset", f_obj.tell() - self.length)
 				 	]
 				)
 			)

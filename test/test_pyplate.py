@@ -96,6 +96,17 @@ class TestPyplate(unittest.TestCase):
 			len(t_template["templates"]["test2"]["variables"]["datatest2"]) == 1,
 			len(t_template["variables"][self.data_name][0]["value"]) == 1
 		)
+	def test_template_fseek(self):
+		t_template = pyplate.template(name=self.template_name)(
+			(pyplate.FSeek)(1),
+			(pyplate.CHAR)(name=self.data_name)
+		)
+		compiled_strings = pyplate.String(str(self.test_char) + str(self.test_char))
+		t_template.extract(compiled_strings)
+		print t_template["variables"]
+		self.assertTrue(
+			t_template["variables"][self.data_name][0]["offset"] == 1
+		)
 	def test_file_extract(self):
 		with pyplate.File(self.test_file_path, 'rb') as t_file:
 			t_template = pyplate.template(name=self.template_name)(
