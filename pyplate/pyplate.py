@@ -93,7 +93,7 @@ class BaseDatatype(object):
 			extracted_values.append(
 				dict(
 					[
-						("value", struct.unpack(self.endianess + self.unpack_sequence, type_data)),
+						("value", struct.unpack(self.endianess + self.unpack_sequence, type_data)[0]),
 				 		("length", self.length),
 				 		("offset", f_obj.tell())
 				 	]
