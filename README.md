@@ -142,7 +142,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 #define the template
 my_template = pyplate.template(name="MyAwesomeTemplate")(
-  (pyplate.CHAR)(name="MyChar", repeat=2)
+  (pyplate.CHAR)(name="MyChar", repeat=2),
   pyplate.template(name="MyInnerTemplate")(
     (pyplate.CHAR)(name="MyInnerTemplateChar")
   )
@@ -160,7 +160,7 @@ In this example, you can see that there is one master template, and one child te
 ```python
 #define the template
 my_template = pyplate.template(name="MyAwesomeTemplate")(
-  (pyplate.CHAR)(name="MyChar", repeat=2)
+  (pyplate.CHAR)(name="MyChar", repeat=2),
   pyplate.template(name="MyInnerTemplate")(
     (pyplate.CHAR)(name="MyInnerTemplateChar")
   )
@@ -190,3 +190,27 @@ inner_template = my_template["templates"]["MyInnerTemplate"]
 #get template variables
 inner_template_variables = inner_template["variables"]
 ```
+
+Utility Functions
+=======
+To help aid in templating, pyplate provides utility functions to manipulate data object attributes inside of a template. These functions are:
+
+* `pyplate.FSeek`: `pyplate.FSeek` allows you to seek a specific offset when the template is being defined. for example:
+
+  ```python
+  #define the template
+  my_template = pyplate.template(name="MyTemplate")(
+    (pyplate.CHAR)(name="MyChar"),
+    (pyplate.FSeek)(1),
+    (pyplate.CHAR)(name="MyChar2")
+  )
+
+  #define data source
+  my_string = pyplate.String("hello")
+
+  #extract data into template
+  my_template.extract(my_string)
+
+  ```
+
+  This will result in the variables "MyChar" and "MyChar2" equal "h" and "l" respectively.
