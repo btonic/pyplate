@@ -129,3 +129,64 @@ Both `template["variables"]` and `template["templates"]` return dictionaries tha
 ```
 
 Therefore, you could access the first `pyplate.CHAR` of `MyChar` by using: `my_template["variables"]["MyChar"][0]`. This then gives you a dictionary of the length of the data type, the offset of where the data value was extracted, and the value that was extracted.
+
+Template Nesting
+=======
+Because of the way pyplate was designed, templates are able to be nested within each other. This allows for clean logic separation and extensability of each template. An example of nested templates can be seen below:
+
+```python
+import pyplate
+#pprint is not required, but provides a simple way to visualize results
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
+#define the template
+my_template = pyplate.template(name="MyAwesomeTemplate")(
+  (pyplate.CHAR)(name="MyChar", repeat=2)
+  pyplate.template(name="MyInnerTemplate")(
+    (pyplate.CHAR)(name="MyInnerTemplateChar")
+  )
+)
+
+#provide data for the template to run on
+my_string = pyplate.String("hello")
+
+#extract data from my_string using the template
+my_template.extract(my_string)
+```
+
+In this example, you can see that there is one master template, and one child template in `my_template`:
+
+```python
+#define the template
+my_template = pyplate.template(name="MyAwesomeTemplate")(
+  (pyplate.CHAR)(name="MyChar", repeat=2)
+  pyplate.template(name="MyInnerTemplate")(
+    (pyplate.CHAR)(name="MyInnerTemplateChar")
+  )
+)
+```
+
+This is allowed because `template` is an object that is `extract`able and `cast`able just like a data type. Because of this, you can also use the `template.append` function to append templates to a data structure.
+
+Skipping the data source definition that was explained in the Usage portion of documentation, we can see that information is extracted from `my_string`:
+
+```python
+#extract data from my_string using the template
+my_template.extract(my_string)
+```
+
+After extracting the data from `my_string` using `my_template`, you can now access the variables that belong to "MyAwesomeTemplate" by accessing `my_template["variables"]["MyAwesomeTemplate"]`. However, to access the variables that belong to "MyInnerTemplate", you must use:
+
+```python
+my_template["templates"]["MyInnerTemplate"]["variables"]
+```
+
+This is because `my_template["templates"]` is a dictionary of template names to template objects. Therefore, to access the variables of "MyInnerTemplate", you use `my_template["templates"]["MyInnerTemplate"]` to get the template object, and then get a variable you access it through `...["variables"]["VARIABLE_NAME"]...`. For example:
+
+```python
+#get template object:
+inner_template = my_template["templates"]["MyInnerTemplate"]
+#get template variables
+inner_template_variables = inner_template["variables"]
+```
