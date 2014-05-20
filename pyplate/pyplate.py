@@ -158,6 +158,8 @@ class CHAR(BaseDatatype):
 			self.extract = self._extract_as_string
 			#repeat turns into string length
 			self.string_length = self.repeat * self.length
+			#convert unpack sequence
+			self.unpack_sequence = "%ss" % str(self.string_length)
 	def _cast_as_string(self, f_obj, file_length):
 		if (f_obj.tell() + self.string_length) > file_length:
 			raise TypeError("Unable to cast data type %s:%s to file object at offset: %s" % (self.__class__.__name__, self.name, str(f_obj.tell())))
@@ -180,7 +182,7 @@ class CHAR(BaseDatatype):
 		#read string
 		extracted_values = dict(
 			                    [
-			                        ("value",  "".join(struct.unpack(self.endianess + (self.unpack_sequence * self.string_length), f_obj.read(self.string_length)))),
+			                        ("value",  struct.unpack(self.endianess + self.unpack_sequence, f_obj.read(self.string_length))[0]),
 			                        ("length", self.string_length),
 			                        ("offset", string_offset)
 			                    ]
