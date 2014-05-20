@@ -33,6 +33,12 @@ class TestPyplate(unittest.TestCase):
 		self.assertTrue(
 			unpack("c", str(self.test_char))[0] == extracted_values[0]["value"]
 		)
+	def test_CHAR_STRING_extract(self):
+		t_char = (pyplate.CHAR)(name=self.data_name, repeat = 5, extract_as_string = True)
+		extracted_values = t_char.extract(pyplate.String(str(self.test_char) * 5))[1]
+		self.assertTrue(
+			"".join(unpack("c"*5, str(self.test_char) * 5)) == extracted_values["value"]
+		)
 	def test_BOOL_extract(self):
 		t_bool = (pyplate.BOOL)(name=self.data_name)
 		extracted_values = t_bool.extract(self.test_bool)[1]
