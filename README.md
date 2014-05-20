@@ -70,7 +70,9 @@ This line is actually a definition for a variable named "MyChar" that is a list 
 
 * `pyplate.BYTE`
 * `pyplate.CHAR`
+
   **note:** `pyplate.CHAR` supports the parameter `extract_as_string` which is either `True` or `False`. This will concatenate the `char`'s into a single string. You can then access it through `template["variables"]["my_variable"]["value"]`.
+
 * `pyplate.SCHAR`
 * `pyplate.UCHAR`
 * `pyplate.BOOL`
