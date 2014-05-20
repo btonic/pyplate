@@ -138,9 +138,55 @@ class BYTE(BaseDatatype):
 		self.unpack_sequence = _BYTE
 class CHAR(BaseDatatype):
 	def __init__(self, *args, **kwargs):
+		string_extraction = False
+		if 'extract_as_string' in kwargs:
+			if kwargs['extract_as_string'] == True:
+				#set to trigger transparent function switches (cast/extract)
+				string_extraction = True
+				#remove from kwargs to prevent it being passed to the baseclass constructor
+				del kwargs['extract_as_string']
 		BaseDatatype.__init__(self, *args, **kwargs)
 		self.length = _CHAR_SIZE
 		self.unpack_sequence = _CHAR
+		#transparently switch extraction methods
+		if string_extraction:
+			#keep records of previous methods
+			self.prev_extract = self.extract
+			self.prev_cast    = self.cast
+			#switch cast and extract
+			self.cast    = self._cast_as_string
+			self.extract = self._extract_as_string
+			#repeat turns into string length
+			self.string_length = self.repeat * self.length
+	def _cast_as_string(self, f_obj, file_length):
+		if (f_obj.tell() + self.string_length) > file_length:
+			raise TypeError("Unable to cast data type %s:%s to file object at offset: %s" % (self.__class__.__name__, self.name, str(f_obj.tell())))
+		else:
+			self.f_offset_start.append(f_obj.tell())
+			#push file pointer to the end of the string
+			f_obj.seek(f_obj.tell() + self.string_length)
+			self.casted = True
+	def _extract_as_string(self, f_obj):
+		if not self.casted:
+			if isinstance(f_obj,String) or isinstance(f_obj, File):
+				#the helper objects are being used. Use the len attribute.
+				self.cast(f_obj, f_obj.len)
+			else:
+				#assume normal open file
+				self.cast(f_obj, os.path.getsize(f_obj.name))
+		#only one offset will exist for a string
+		string_offset = self.f_offset_start[0]
+		f_obj.seek(string_offset)
+		#read string
+		extracted_values = dict(
+			                    [
+			                        ("value",  "".join(struct.unpack(self.endianess + (self.unpack_sequence * self.string_length), f_obj.read(self.string_length)))),
+			                        ("length", self.string_length),
+			                        ("offset", string_offset)
+			                    ]
+			               )
+
+		return [self, extracted_values]
 class SCHAR(BaseDatatype):
 	def __init__(self, *args, **kwargs):
 		BaseDatatype.__init__(self, *args, **kwargs)
