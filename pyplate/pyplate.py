@@ -182,7 +182,7 @@ class CHAR(BaseDatatype):
 		#read string
 		extracted_values = dict(
 			                    [
-			                        ("value",  "".join(struct.unpack(self.endianess + self.unpack_sequence, f_obj.read(self.string_length)))),
+			                        ("value",  struct.unpack(self.endianess + self.unpack_sequence, f_obj.read(self.string_length))[0]),
 			                        ("length", self.string_length),
 			                        ("offset", string_offset)
 			                    ]
