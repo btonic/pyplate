@@ -99,7 +99,11 @@ class BaseDatatype(object):
 				 	]
 				)
 			)
-		return [self, extracted_values]
+		if len(extracted_values) > 1:
+			return [self, extracted_values]
+		else:
+			#return the only value, reduces using [0] on a single value result.
+			return [self, extracted_values[0]]
 
 
 #ease of use functions
