@@ -100,7 +100,7 @@ class TestPyplate(unittest.TestCase):
 		t_template.extract(compiled_strings)
 		self.assertTrue(
 			t_template["templates"]["test2"]["variables"]["datatest2"]["length"] == calcsize("i"),
-			len(t_template["variables"][self.data_name]["value"]) == 1
+			t_template["variables"][self.data_name]["length"] == 1
 		)
 	def test_template_fseek(self):
 		t_template = pyplate.template(name=self.template_name)(
@@ -112,16 +112,23 @@ class TestPyplate(unittest.TestCase):
 		self.assertTrue(
 			t_template["variables"][self.data_name]["offset"] == 1
 		)
+	def test_extract_as_string(self):
+		t_char_as_string = (pyplate.CHAR)(name=self.data_name, repeat=2, extract_as_string=True)
+		compiled_strings = pyplate.String(str(self.test_char) + str(self.test_char))
+		extracted_values = t_char_as_string.extract(compiled_strings)[1]
+		self.assertTrue(
+			unpack("2s", str(compiled_strings))[0] == extracted_values["value"]
+		)
 	def test_file_extract(self):
 		with pyplate.File(self.test_file_path, 'rb') as t_file:
 			t_template = pyplate.template(name=self.template_name)(
-				(pyplate.CHAR)(name=self.data_name, repeat=4),
+				(pyplate.CHAR)(name=self.data_name, repeat=4, extract_as_string = True),
 				(pyplate.SHORT)(name=self.data_name+"short")
 			)
 			t_template.extract(t_file)
 			self.assertTrue(
-				t_template["variables"][self.data_name] != None,
-				t_template["variables"][self.data_name+"short"] != None
+				t_template["variables"][self.data_name]["value"] != None,
+				t_template["variables"][self.data_name+"short"]["value"] != None
 			)
 
 if __name__ == '__main__':
